@@ -51,8 +51,38 @@ const getProjectById = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Delete Project
+// @route   DELETE /api/projects/:id
+// @access  Private
+const deleteProject = asyncHandler(async (req, res) => {
+  const project = await Project.findById(req.params.id)
+
+  if (project) {
+    res.json(project)
+  } else {
+    res.status(404)
+    throw new Error('Project not found')
+  }
+})
+
+// @desc    Update Project
+// @route   PATCH /api/projects/:id
+// @access  Private
+const updateProject = asyncHandler(async (req, res) => {
+  const project = await Project.findById(req.params.id)
+
+  if (project) {
+    res.json(project)
+  } else {
+    res.status(404)
+    throw new Error('Project not found')
+  }
+})
+
 export {
   createProject,
   getProjectById,
   getAllProjects,
+  deleteProject,
+  updateProject
 }
