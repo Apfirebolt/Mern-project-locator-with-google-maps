@@ -1,88 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import React, { useEffect } from "react";
+import { Button, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { LinkContainer } from "react-router-bootstrap";
+import { useNavigate } from "react-router-dom";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
-import FormContainer from "../../components/FormContainer";
-import { login } from "../../actions/userActions";
+import { listProjectAction } from "../../actions/projectActions";
 
-const ListProject = ({ history }) => {
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [details, setDetails] = useState("");
-
+const ListProject = () => {
   const dispatch = useDispatch();
 
+  const listProject = useSelector((state) => state.projectList);
+  const { loading, error, projects } = listProject;
+
   const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  const { userInfo } = userLogin;
 
-  console.log("User info ", userInfo);
+  const navigate = useNavigate();
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    dispatch(login(name, location, startDate, endDate, details));
-  };
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(listProjectAction());
+    } else {
+      navigate("/login");
+    }
+  }, [dispatch, navigate, userInfo]);
 
   return (
-    <FormContainer>
-      <h2 className="text-center my-3">Add New Project</h2>
-      {error && <Message variant="danger">{error}</Message>}
-      {loading && <Loader />}
-      <Form onSubmit={submitHandler}>
-        <Form.Group controlId="email">
-          <Form.Label>Project Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Project Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Row className="my-3">
-          <Col>
-            <Form.Group controlId="startDate">
-              <Form.Label>Start Date</Form.Label>
-              <Form.Control
-                type="date"
-                placeholder="Enter Start Date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group controlId="startDate">
-              <Form.Label>End Date</Form.Label>
-              <Form.Control
-                type="date"
-                placeholder="Enter End Date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Form.Group controlId="startDate" className="my-3">
-          <Form.Label>Enter Project Details</Form.Label>
-          <Form.Control
-            as="textarea" rows={5}
-            type="text"
-            placeholder="Enter Project Details"
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button type="submit" variant="primary">
-          Add New Project
-        </Button>
-      </Form>
-    </FormContainer>
+    <>
+      <h2 className="text-center my-3">Projects</h2>
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">{error}</Message>
+      ) : (
+        <Table striped bordered hover responsive className="table-sm">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>PROJECT NAME</th>
+              <th>PROJECT DETAILS</th>
+              <th>START DATE</th>
+              <th>END DATE</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {projects.map((project) => (
+              <tr key={project._id}>
+                <td>{project._id}</td>
+                <td>{project.name}</td>
+                <td>{project.details}</td>
+                <td>{project.startDate}</td>
+                <td>{project.endDate}</td>
+                <td>
+                  <LinkContainer to={`/project/${project._id}`}>
+                    <Button variant="light" className="btn-sm">
+                      Details
+                    </Button>
+                  </LinkContainer>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+    </>
   );
 };
 

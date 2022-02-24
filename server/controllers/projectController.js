@@ -7,18 +7,19 @@ import Project from '../models/projectModel.js'
 const createProject = asyncHandler(async (req, res) => {
   const { name, details, startDate, endDate, location } = req.body
 
-  const project = await Project.findOne({ name })
+  const project = await Project.create({
+    name,
+    startDate,
+    endDate,
+    details,
+    location
+  })
 
   if (project) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    })
+    res.json(project)
   } else {
     res.status(401)
-    throw new Error('Invalid email or password')
+    throw new Error('Invalid project data')
   }
 })
 

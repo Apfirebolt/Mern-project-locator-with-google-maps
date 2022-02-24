@@ -12,6 +12,15 @@ import {
   userUpdateReducer,
 } from './reducers/userReducers'
 
+import {
+  createProjectReducer,
+  updateProjectReducer,
+  projectDeleteReducer,
+  projectListReducer,
+  projectDetailsReducer,
+
+} from './reducers/projectReducers'
+
 const reducer = combineReducers({
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
@@ -20,6 +29,12 @@ const reducer = combineReducers({
   userList: userListReducer,
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
+
+  createProject: createProjectReducer,
+  updateProject: updateProjectReducer,
+  projectDetails: projectDetailsReducer,
+  projectList: projectListReducer,
+  projectDelete: projectDeleteReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

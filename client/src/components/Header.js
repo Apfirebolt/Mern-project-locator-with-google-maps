@@ -1,6 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { LinkContainer } from 'react-router-bootstrap'
+import { useNavigate } from 'react-router-dom'
 import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
 import { logout } from '../actions/userActions'
 
@@ -9,9 +10,14 @@ const Header = () => {
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
+  const navigate = useNavigate()
 
   const logoutHandler = () => {
     dispatch(logout())
+  }
+
+  const navigateToUrl = (url) => {
+    navigate(url)
   }
 
   return (
@@ -24,13 +30,14 @@ const Header = () => {
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='mx-auto'>
-              <LinkContainer to='/project'>
-                <Nav.Link>
-                  <i className='fas fa-shopping-cart'></i> Project
-                </Nav.Link>
-              </LinkContainer>
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
+                  <NavDropdown.Item onClick={() => {navigateToUrl('/project')}}>
+                    Projects
+                  </NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => {navigateToUrl('/project/add')}}>
+                    Add Project
+                  </NavDropdown.Item>
                   <NavDropdown.Item onClick={logoutHandler}>
                     Logout
                   </NavDropdown.Item>

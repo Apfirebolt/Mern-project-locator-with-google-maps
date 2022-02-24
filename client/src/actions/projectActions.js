@@ -14,15 +14,16 @@ import {
   PROJECT_LIST_RESET,
   PROJECT_DELETE_REQUEST,
   PROJECT_DELETE_SUCCESS,
-  PROJECT_DELETE_FAIL,
   PROJECT_UPDATE_REQUEST,
   PROJECT_UPDATE_RESET,
   PROJECT_UPDATE_SUCCESS,
   PROJECT_UPDATE_FAIL
 } from '../constants/projectConstants'
 
+import { logout } from './userActions'
 
-export const createProject = (payload) => async (dispatch, getState) => {
+
+export const createProjectAction = (payload) => async (dispatch, getState) => {
   try {
     dispatch({
       type: PROJECT_CREATE_REQUEST,
@@ -37,8 +38,8 @@ export const createProject = (payload) => async (dispatch, getState) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
     }
-
-    const { data } = await axios.post(`/api/projects`, config, payload)
+    
+    const { data } = await axios.post(`http://localhost:5000/api/projects`, payload, config,)
 
     dispatch({
       type: PROJECT_CREATE_SUCCESS,
@@ -76,7 +77,7 @@ export const updateProject = (project) => async (dispatch, getState) => {
       },
     }
 
-    const { data } = await axios.put(`/api/users/profile`, user, config)
+    const { data } = await axios.put(`/api/users/profile`, config)
 
     dispatch({
       type: PROJECT_UPDATE_SUCCESS,
@@ -97,7 +98,7 @@ export const updateProject = (project) => async (dispatch, getState) => {
   }
 }
 
-export const listProjects = () => async (dispatch, getState) => {
+export const listProjectAction = () => async (dispatch, getState) => {
   try {
     dispatch({
       type: PROJECT_LIST_REQUEST,
@@ -113,11 +114,10 @@ export const listProjects = () => async (dispatch, getState) => {
       },
     }
 
-    const { data } = await axios.get(`/api/projects`, config)
-
+    const { data } = await axios.get(`http://localhost:5000/api/projects`, config)
     dispatch({
       type: PROJECT_LIST_SUCCESS,
-      payload: data,
+      payload: data.projects,
     })
   } catch (error) {
     const message =
@@ -129,6 +129,44 @@ export const listProjects = () => async (dispatch, getState) => {
     }
     dispatch({
       type: PROJECT_LIST_FAIL,
+      payload: message,
+    })
+  }
+}
+
+export const getProjectDetails = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: PROJECT_DETAILS_REQUEST,
+    })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    const { data } = await axios.get(`http://localhost:5000/api/projects/${id}`, config)
+
+    dispatch({
+      type: PROJECT_DETAILS_SUCCESS,
+      payload: data,
+    })
+    
+  } catch (error) {
+    const message =
+      error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    if (message === 'Not authorized, token failed') {
+      dispatch(logout())
+    }
+    dispatch({
+      type: PROJECT_DETAILS_FAIL,
       payload: message,
     })
   }
@@ -163,45 +201,6 @@ export const deleteProject = (id) => async (dispatch, getState) => {
     }
     dispatch({
       type: PROJECT_DELETE_FAIL,
-      payload: message,
-    })
-  }
-}
-
-export const updateProject = (project) => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: PROJECT_UPDATE_REQUEST,
-    })
-
-    const {
-      userLogin: { userInfo },
-    } = getState()
-
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    }
-
-    const { data } = await axios.put(`/api/projects/${project._id}`, project, config)
-
-    dispatch({ type: PROJECT_UPDATE_SUCCESS })
-
-    dispatch({ type: PROJECT_DETAILS_SUCCESS, payload: data })
-
-    dispatch({ type: PROJECT_DETAILS_RESET })
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message
-    if (message === 'Not authorized, token failed') {
-      dispatch(logout())
-    }
-    dispatch({
-      type: PROJECT_UPDATE_FAIL,
       payload: message,
     })
   }

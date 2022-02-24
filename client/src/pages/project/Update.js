@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
 import { login } from "../../actions/userActions";
+import { getProjectDetails } from "../../actions/projectActions";
+import GoogleMapComponent from "../../components/MapComponent";
 
 const UpdateProject = ({ history }) => {
   const [name, setName] = useState("");
@@ -17,18 +19,35 @@ const UpdateProject = ({ history }) => {
   const dispatch = useDispatch();
 
   const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  const { userInfo } = userLogin;
+  const params = useParams();
 
-  console.log("User info ", userInfo);
+  const projectDetail = useSelector((state) => state.projectDetails);
+  const { loading, error, project } = projectDetail;
 
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(name, location, startDate, endDate, details));
   };
 
+  useEffect(() => {
+    if (!userInfo) {
+      history.push('/login')
+    }
+    if (!project.name) {
+      dispatch(getProjectDetails(params.id))
+    } else {
+      setName(project.name)
+      setLocation(project.location)
+      setStartDate(project.startDate)
+      setEndDate(project.endDate)
+      setDetails(project.details)
+    }
+  }, [dispatch, project])
+
   return (
     <FormContainer>
-      <h2 className="text-center my-3">Add New Project</h2>
+      <h2 className="text-center my-3">Update Existing Project</h2>
       {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
@@ -78,10 +97,18 @@ const UpdateProject = ({ history }) => {
           ></Form.Control>
         </Form.Group>
 
-        <Button type="submit" variant="primary">
+        <Button type="submit" variant="primary" className="my-3">
           Update Project
         </Button>
       </Form>
+
+      <GoogleMapComponent
+        isMarkerShown
+        googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: `400px` }} />}
+        mapElement={<div style={{ height: `100%` }} />}
+      />
     </FormContainer>
   );
 };
