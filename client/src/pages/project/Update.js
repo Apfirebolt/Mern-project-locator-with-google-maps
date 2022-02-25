@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
+import { Form, Button, Row, Col, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
-import { login } from "../../actions/userActions";
-import { getProjectDetails } from "../../actions/projectActions";
+import { getProjectDetails, updateProjectAction, deleteProjectAction } from "../../actions/projectActions";
 import GoogleMapComponent from "../../components/MapComponent";
 
 const UpdateProject = ({ history }) => {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -21,20 +26,35 @@ const UpdateProject = ({ history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const params = useParams();
+  const navigate = useNavigate();
 
   const projectDetail = useSelector((state) => state.projectDetails);
   const { loading, error, project } = projectDetail;
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    dispatch(login(name, location, startDate, endDate, details));
+  const updateProject = () => {
+    const payload = {
+      _id: project._id,
+      name,
+      details,
+      startDate,
+      endDate,
+      location
+    }
+    dispatch(updateProjectAction(payload));
+    navigate('/project')
+  };
+
+  const deleteProject = () => {
+    dispatch(deleteProjectAction(project._id));
+    handleClose()
+    navigate('/project')
   };
 
   useEffect(() => {
     if (!userInfo) {
       history.push('/login')
     }
-    if (!project.name) {
+    if (project._id !== params.id) {
       dispatch(getProjectDetails(params.id))
     } else {
       setName(project.name)
@@ -50,7 +70,7 @@ const UpdateProject = ({ history }) => {
       <h2 className="text-center my-3">Update Existing Project</h2>
       {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
-      <Form onSubmit={submitHandler}>
+      <Form>
         <Form.Group controlId="email">
           <Form.Label>Project Name</Form.Label>
           <Form.Control
@@ -97,10 +117,28 @@ const UpdateProject = ({ history }) => {
           ></Form.Control>
         </Form.Group>
 
-        <Button type="submit" variant="primary" className="my-3">
+        <Button variant="primary" className="my-3" onClick={() => updateProject(project._id)}>
           Update Project
         </Button>
+        <Button variant="danger" className="mx-3 my-3" onClick={() => handleShow()}>
+          Delete Project
+        </Button>
       </Form>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Project Confirm</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Woohoo, are you sure you want to delete this project ?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={() => deleteProject(project._id)}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <GoogleMapComponent
         isMarkerShown

@@ -11,12 +11,12 @@ import { protect, limiter } from '../middleware/authMiddleware.js'
 
 router
   .route('/')
-  .post(createProject)
-  .get(limiter, getAllProjects)
+  .post(protect, createProject)
+  .get(protect, limiter, getAllProjects)
 router
   .route('/:id')
   .delete(protect, deleteProject)
   .get(protect, getProjectById)
-  .put(protect, updateProject)
+  .patch(protect, updateProject)
 
 export default router

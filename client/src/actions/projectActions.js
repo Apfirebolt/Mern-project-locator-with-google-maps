@@ -60,7 +60,7 @@ export const createProjectAction = (payload) => async (dispatch, getState) => {
   }
 }
 
-export const updateProject = (project) => async (dispatch, getState) => {
+export const updateProjectAction = (project) => async (dispatch, getState) => {
   try {
     dispatch({
       type: PROJECT_UPDATE_REQUEST,
@@ -77,12 +77,14 @@ export const updateProject = (project) => async (dispatch, getState) => {
       },
     }
 
-    const { data } = await axios.put(`/api/users/profile`, config)
+    const { data } = await axios.patch(`http://localhost:5000/api/projects/${project._id}`, project, config)
 
     dispatch({
       type: PROJECT_UPDATE_SUCCESS,
       payload: data,
     })
+
+    dispatch({type: PROJECT_UPDATE_RESET})
   } catch (error) {
     const message =
       error.response && error.response.data.message
@@ -172,7 +174,7 @@ export const getProjectDetails = (id) => async (dispatch, getState) => {
   }
 }
 
-export const deleteProject = (id) => async (dispatch, getState) => {
+export const deleteProjectAction = (id) => async (dispatch, getState) => {
   try {
     dispatch({
       type: PROJECT_DELETE_REQUEST,
@@ -188,7 +190,7 @@ export const deleteProject = (id) => async (dispatch, getState) => {
       },
     }
 
-    await axios.delete(`/api/projects/${id}`, config)
+    await axios.delete(`http://localhost:5000/api/projects/${id}`, config)
 
     dispatch({ type: PROJECT_DELETE_SUCCESS })
   } catch (error) {

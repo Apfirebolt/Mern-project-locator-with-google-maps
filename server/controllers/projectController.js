@@ -7,7 +7,10 @@ import Project from '../models/projectModel.js'
 const createProject = asyncHandler(async (req, res) => {
   const { name, details, startDate, endDate, location } = req.body
 
+  console.log(req.user)
+
   const project = await Project.create({
+    createdBy: req.user._id,
     name,
     startDate,
     endDate,
@@ -27,7 +30,8 @@ const createProject = asyncHandler(async (req, res) => {
 // @route   GET /api/projects
 // @access  Private
 const getAllProjects = asyncHandler(async (req, res) => {
-  const pageSize = 5
+  
+  const pageSize = 10
   const page = Number(req.query.pageNumber) || 1
 
   const projects = await Project.find({})
@@ -56,13 +60,20 @@ const getProjectById = asyncHandler(async (req, res) => {
 // @route   DELETE /api/projects/:id
 // @access  Private
 const deleteProject = asyncHandler(async (req, res) => {
-  const project = await Project.findById(req.params.id)
+  const isProjectDeleted = await Project.deleteOne(
+    { createdBy: req.user._id, _id: req.params.id },
+    {
+      useFindAndModify: false,
+    }
+  );
 
-  if (project) {
-    res.json(project)
+  if (isProjectDeleted) {
+    res.json({
+      message: "Project deleted successfully",
+    });
   } else {
-    res.status(404)
-    throw new Error('Project not found')
+    res.status(404);
+    throw new Error("Project not found");
   }
 })
 
@@ -70,13 +81,21 @@ const deleteProject = asyncHandler(async (req, res) => {
 // @route   PATCH /api/projects/:id
 // @access  Private
 const updateProject = asyncHandler(async (req, res) => {
-  const project = await Project.findById(req.params.id)
+  
+  const project = await Project.findOneAndUpdate(
+    { createdBy: req.user._id, _id: req.params.id },
+    req.body,
+    {
+      new: true,
+      useFindAndModify: false,
+    }
+  );
 
   if (project) {
-    res.json(project)
+    res.json(project);
   } else {
-    res.status(404)
-    throw new Error('Project not found')
+    res.status(404);
+    throw new Error("Project not found");
   }
 })
 
