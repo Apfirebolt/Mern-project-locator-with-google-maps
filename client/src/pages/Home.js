@@ -1,18 +1,22 @@
 import React from "react";
-import { Row, Col } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import Meta from "../components/Meta";
 
 const HomeScreen = () => {
   return (
     <>
       <Meta />
-      <Row>
-        <h3>Project Locator</h3>
-        <p>
-          This is a simple hero unit, a simple jumbotron-style component for
-          calling extra attention to featured content or information.
-        </p>
-      </Row>
+      <h3 className="my-3 text-center">Project Locator</h3>
+      <p>
+        A small app created in MERN stack which using limited functionalities of
+        Google maps. Includes the following features :-
+      </p>
+      <ListGroup>
+        <ListGroup.Item>Use Authentication</ListGroup.Item>
+        <ListGroup.Item>CRUD for projects. Each user can add projects and perform full CRUD functionalities</ListGroup.Item>
+        <ListGroup.Item>Add location coordinates with click event on Google Maps</ListGroup.Item>
+        <ListGroup.Item>Custom Bootswatch themes derived from Bootstrap</ListGroup.Item>
+      </ListGroup>
     </>
   );
 };
