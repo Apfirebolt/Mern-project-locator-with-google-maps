@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
-import { createProjectAction, listProjectAction } from "../../actions/projectActions";
+import { createProjectAction } from "../../actions/projectActions";
 import GoogleMapComponent from "../../components/MapComponent";
 
 const AddProject = () => {
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState(25.473);
+  const [longitude, setLongitude] = useState(81.878);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [details, setDetails] = useState("");
@@ -35,7 +36,8 @@ const AddProject = () => {
     e.preventDefault();
     const payload = {
       name,
-      location,
+      latitude,
+      longitude,
       startDate,
       endDate,
       details
@@ -43,6 +45,11 @@ const AddProject = () => {
     dispatch(createProjectAction(payload));
     navigate('/project')
   };
+
+  const onMarkerClick = (e) => {
+    setLatitude(e.latLng.lat());
+    setLongitude(e.latLng.lng());
+  }
 
   return (
     <FormContainer>
@@ -107,6 +114,9 @@ const AddProject = () => {
         loadingElement={<div style={{ height: `100%` }} />}
         containerElement={<div style={{ height: `400px` }} />}
         mapElement={<div style={{ height: `100%` }} />}
+        onMarkerClick={onMarkerClick}
+        latitude={latitude}
+        longitude={longitude}
       />
     </FormContainer>
   );

@@ -6,8 +6,12 @@ const projectSchema = mongoose.Schema(
       type: String,
       required: [true, "Project Name is a required field"],
     },
-    location: {
-      type: String,
+    latitude: {
+      type: Number,
+      required: false,
+    },
+    longitude: {
+      type: Number,
       required: false,
     },
     details: {

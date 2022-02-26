@@ -16,7 +16,8 @@ const UpdateProject = ({ history }) => {
   const handleShow = () => setShow(true);
 
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [details, setDetails] = useState("");
@@ -38,7 +39,8 @@ const UpdateProject = ({ history }) => {
       details,
       startDate,
       endDate,
-      location
+      latitude,
+      longitude
     }
     dispatch(updateProjectAction(payload));
     navigate('/project')
@@ -50,6 +52,11 @@ const UpdateProject = ({ history }) => {
     navigate('/project')
   };
 
+  const onMarkerClick = (e) => {
+    setLatitude(e.latLng.lat());
+    setLongitude(e.latLng.lng());
+  }
+
   useEffect(() => {
     if (!userInfo) {
       history.push('/login')
@@ -58,7 +65,8 @@ const UpdateProject = ({ history }) => {
       dispatch(getProjectDetails(params.id))
     } else {
       setName(project.name)
-      setLocation(project.location)
+      setLatitude(project.latitude)
+      setLongitude(project.longitude)
       setStartDate(project.startDate)
       setEndDate(project.endDate)
       setDetails(project.details)
@@ -134,7 +142,7 @@ const UpdateProject = ({ history }) => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => deleteProject(project._id)}>
+          <Button variant="danger" onClick={() => deleteProject(project._id)}>
             Delete
           </Button>
         </Modal.Footer>
@@ -146,6 +154,9 @@ const UpdateProject = ({ history }) => {
         loadingElement={<div style={{ height: `100%` }} />}
         containerElement={<div style={{ height: `400px` }} />}
         mapElement={<div style={{ height: `100%` }} />}
+        onMarkerClick={onMarkerClick}
+        latitude={latitude}
+        longitude={longitude}
       />
     </FormContainer>
   );

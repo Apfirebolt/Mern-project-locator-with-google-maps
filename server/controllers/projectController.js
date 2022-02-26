@@ -5,7 +5,7 @@ import Project from '../models/projectModel.js'
 // @route   POST /api/projects
 // @access  Private
 const createProject = asyncHandler(async (req, res) => {
-  const { name, details, startDate, endDate, location } = req.body
+  const { name, details, startDate, endDate, latitude, longitude } = req.body
 
   console.log(req.user)
 
@@ -15,7 +15,8 @@ const createProject = asyncHandler(async (req, res) => {
     startDate,
     endDate,
     details,
-    location
+    latitude,
+    longitude
   })
 
   if (project) {
