@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../../components/Message'
@@ -7,18 +8,27 @@ import Loader from '../../components/Loader'
 import FormContainer from '../../components/FormContainer'
 import { login } from '../../actions/userActions'
 
-const LoginScreen = ({ location, history }) => {
+const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const dispatch = useDispatch()
 
   const userLogin = useSelector((state) => state.userLogin)
-  const { loading, error, userInfo } = userLogin
+  const { loading, error, success, userInfo } = userLogin
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (success) {
+      navigate('/project')
+    }
+  }, [dispatch, success])
 
   const submitHandler = (e) => {
     e.preventDefault()
     dispatch(login(email, password))
+    navigate('/project')
   }
 
   return (

@@ -2,6 +2,7 @@ import {
     PROJECT_CREATE_REQUEST,
     PROJECT_CREATE_SUCCESS,
     PROJECT_CREATE_FAIL,
+    PROJECT_CREATE_RESET,
     PROJECT_DELETE_FAIL,
     PROJECT_DELETE_REQUEST,
     PROJECT_DELETE_SUCCESS,
@@ -14,6 +15,7 @@ import {
     PROJECT_DETAILS_RESET,
     PROJECT_UPDATE_REQUEST,
     PROJECT_UPDATE_SUCCESS,
+    PROJECT_UPDATE_RESET,
     PROJECT_UPDATE_FAIL,
     PROJECT_LIST_RESET
   } from '../constants/projectConstants'
@@ -23,9 +25,11 @@ import {
       case PROJECT_CREATE_REQUEST:
         return { loading: true }
       case PROJECT_CREATE_SUCCESS:
-        return { loading: false, project: action.payload }
+        return { loading: false, success: true, project: action.payload }
       case PROJECT_CREATE_FAIL:
         return { loading: false, error: action.payload }
+      case PROJECT_CREATE_RESET:
+        return { success: false }
       default:
         return state
     }
@@ -36,7 +40,9 @@ import {
       case PROJECT_UPDATE_REQUEST:
         return { loading: true }
       case PROJECT_UPDATE_SUCCESS:
-        return { loading: false, userInfo: action.payload }
+        return { loading: false, success: true, userInfo: action.payload }
+      case PROJECT_UPDATE_RESET:
+        return { success: false }
       case PROJECT_UPDATE_FAIL:
         return { loading: false, error: action.payload }
       default:

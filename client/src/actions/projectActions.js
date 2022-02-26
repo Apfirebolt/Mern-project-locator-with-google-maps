@@ -3,6 +3,7 @@ import {
   PROJECT_CREATE_REQUEST,
   PROJECT_CREATE_SUCCESS,
   PROJECT_CREATE_FAIL,
+  PROJECT_CREATE_RESET,
   PROJECT_DELETE_FAIL,
   PROJECT_DETAILS_REQUEST,
   PROJECT_DETAILS_RESET,
@@ -45,6 +46,7 @@ export const createProjectAction = (payload) => async (dispatch, getState) => {
       type: PROJECT_CREATE_SUCCESS,
       payload: data,
     })
+    dispatch({type: PROJECT_CREATE_RESET})
   } catch (error) {
     const message =
       error.response && error.response.data.message

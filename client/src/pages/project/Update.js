@@ -30,7 +30,10 @@ const UpdateProject = ({ history }) => {
   const navigate = useNavigate();
 
   const projectDetail = useSelector((state) => state.projectDetails);
-  const { loading, error, project } = projectDetail;
+  const { project } = projectDetail;
+
+  const projectUpdate = useSelector((state) => state.updateProject);
+  const { loading, success, error } = projectUpdate;
 
   const updateProject = () => {
     const payload = {
@@ -43,7 +46,6 @@ const UpdateProject = ({ history }) => {
       longitude
     }
     dispatch(updateProjectAction(payload));
-    navigate('/project')
   };
 
   const deleteProject = () => {
@@ -56,6 +58,13 @@ const UpdateProject = ({ history }) => {
     setLatitude(e.latLng.lat());
     setLongitude(e.latLng.lng());
   }
+
+  useEffect(() => {
+    if (success) {
+      dispatch(getProjectDetails(project._id))
+      navigate('/project')
+    }
+  }, [dispatch, success])
 
   useEffect(() => {
     if (!userInfo) {

@@ -7,7 +7,10 @@ import Project from '../models/projectModel.js'
 const createProject = asyncHandler(async (req, res) => {
   const { name, details, startDate, endDate, latitude, longitude } = req.body
 
-  console.log(req.user)
+  if (!name || !details || !startDate || !endDate) {
+    res.status(400)
+    throw new Error('Invalid project data. Name, details, start date and end date are required')
+  }
 
   const project = await Project.create({
     createdBy: req.user._id,
@@ -32,10 +35,10 @@ const createProject = asyncHandler(async (req, res) => {
 // @access  Private
 const getAllProjects = asyncHandler(async (req, res) => {
   
-  const pageSize = 10
+  const pageSize = 5
   const page = Number(req.query.pageNumber) || 1
 
-  const projects = await Project.find({})
+  const projects = await Project.find({ createdBy: req.user._id })
     .limit(pageSize)
     .skip(pageSize * (page - 1))
 
@@ -82,6 +85,13 @@ const deleteProject = asyncHandler(async (req, res) => {
 // @route   PATCH /api/projects/:id
 // @access  Private
 const updateProject = asyncHandler(async (req, res) => {
+
+  const { name, details, startDate, endDate } = req.body;
+
+  if (!name || !details || !startDate || !endDate) {
+    res.status(400)
+    throw new Error('Invalid project data. Name, details, start date and end date are required')
+  }
   
   const project = await Project.findOneAndUpdate(
     { createdBy: req.user._id, _id: req.params.id },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../../components/Message'
@@ -15,9 +16,16 @@ const RegisterScreen = ({ location, history }) => {
   const [message, setMessage] = useState(null)
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const userRegister = useSelector((state) => state.userRegister)
-  const { loading, error, userInfo } = userRegister
+  const { loading, error, success, userInfo } = userRegister
+
+  useEffect(() => {
+    if (success) {
+      navigate('/project')
+    }
+  }, [dispatch, success])
 
   const submitHandler = (e) => {
     e.preventDefault()

@@ -19,7 +19,7 @@ const AddProject = () => {
   const dispatch = useDispatch();
 
   const createProject = useSelector((state) => state.createProject);
-  const { loading, error } = createProject;
+  const { loading, success, error } = createProject;
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -32,6 +32,12 @@ const AddProject = () => {
     }
   }, [dispatch, userInfo])
 
+  useEffect(() => {
+    if (success) {
+      navigate('/project')
+    }
+  }, [dispatch, success])
+
   const submitHandler = (e) => {
     e.preventDefault();
     const payload = {
@@ -43,7 +49,6 @@ const AddProject = () => {
       details
     }
     dispatch(createProjectAction(payload));
-    navigate('/project')
   };
 
   const onMarkerClick = (e) => {
