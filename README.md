@@ -49,6 +49,24 @@ npm run dev
 
 - Might integrate geo-coder API which would automatically detect the name of the location clicked on the Google maps.
 
+### Update 6/3/2022
+
+- Google Authentication added to the project on experimental basis. Meaning, you can test Google login functionality, but the 
+back-end of the application is still not configured to serve APIs using Google ID and username
+
+- Following steps were take to implement Google Auth in this app.
+
+* "React-google-login" 3rd party package is being used. This would be used to display "Login with Google" button.
+
+* Go to Google console developer and create a new application
+
+* Choose this app and go to OAuth Consent Screen, give a unique name to the app for Google to uniquely identify your
+application.
+
+* Go to create credentials --> OAuth Client ID, fill in Authorized Origin and Authorized Redirect Url fields.
+
+* Paste this Client ID in this app as a prop passed to "React-Google-Login" component.
+
 ## Project Screenshots
 
 Screenshots would be added as development is in progress. Below is the attached screenshot of the sign-up page.
