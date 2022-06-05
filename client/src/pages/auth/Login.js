@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,9 +10,6 @@ import FormContainer from '../../components/FormContainer'
 import { login } from '../../actions/userActions'
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
   const dispatch = useDispatch()
 
   const userLogin = useSelector((state) => state.userLogin)
@@ -25,26 +23,37 @@ const LoginScreen = () => {
     }
   }, [dispatch, success])
 
-  const submitHandler = (e) => {
-    e.preventDefault()
-    dispatch(login(email, password))
-    navigate('/project')
-  }
+  const onSubmit = async (values) => {
+    dispatch(login(values.email, values.password))
+  };
+
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   return (
     <FormContainer>
       <h2 className="text-center">Sign In</h2>
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group controlId='email'>
           <Form.Label>Email Address</Form.Label>
           <Form.Control
             type='email'
             placeholder='Enter email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "invalid email address"
+              }
+            })}
           ></Form.Control>
+          {errors.email && <Message variant='danger'>{errors.email.message}</Message>}
         </Form.Group>
 
         <Form.Group controlId='password' className="my-3">
@@ -52,11 +61,17 @@ const LoginScreen = () => {
           <Form.Control
             type='password'
             placeholder='Enter password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password is too short"
+              }
+            })}
           ></Form.Control>
+          {errors.password && <Message variant='danger'>{errors.password.message}</Message>}
         </Form.Group>
-
+        
         <Button type='submit' variant='primary' className="mx-auto">
           Login
         </Button>
