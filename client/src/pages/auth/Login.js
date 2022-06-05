@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../../components/Message'
@@ -16,11 +15,6 @@ const LoginScreen = () => {
   const { loading, error, success, userInfo } = userLogin;
 
   const navigate = useNavigate();
-
-  const responseGoogle = (response) => {
-    console.log('Google response ', response);
-    console.log(response.profileObj);
-  };
 
   useEffect(() => {
     if (success) {
@@ -80,14 +74,6 @@ const LoginScreen = () => {
         <Button type='submit' variant='primary' className="mx-auto">
           Login
         </Button>
-
-        <GoogleLogin
-          clientId="your Client ID here"
-          buttonText="Login Using Google"
-          onSuccess={responseGoogle}
-          onFailure={responseGoogle}
-          cookiePolicy={"single_host_origin"}
-        />
       </Form>
 
       <Row className="py-3">

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from "react-hook-form";
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../../components/Message'
 import Loader from '../../components/Loader'
 import FormContainer from '../../components/FormContainer'
-import { register } from '../../actions/userActions'
+import { registerAction } from '../../actions/userActions'
 
 const RegisterScreen = ({ location, history }) => {
   const [name, setName] = useState('')
@@ -21,6 +21,14 @@ const RegisterScreen = ({ location, history }) => {
   const userRegister = useSelector((state) => state.userRegister)
   const { loading, error, success, userInfo } = userRegister
 
+  const {
+    handleSubmit,
+    register,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm();
+
   useEffect(() => {
     if (success) {
       navigate('/project')
@@ -32,9 +40,13 @@ const RegisterScreen = ({ location, history }) => {
     if (password !== confirmPassword) {
       setMessage('Passwords do not match')
     } else {
-      dispatch(register(name, email, password))
+      
     }
   }
+
+  const onSubmit = async (values) => {
+    dispatch(registerAction(values.name, values.email, values.password))
+  };
 
   return (
     <FormContainer>
@@ -42,7 +54,7 @@ const RegisterScreen = ({ location, history }) => {
       {message && <Message variant='danger'>{message}</Message>}
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <Row className="my-3">
           <Col md={6}>
             <Form.Group controlId='name'>
@@ -50,9 +62,11 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='name'
                 placeholder='Enter name'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                {...register("name", {
+                  required: "Name is required",
+                })}
               ></Form.Control>
+              {errors.name && <Message variant='danger'>{errors.name.message}</Message>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -61,9 +75,15 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='email'
                 placeholder='Enter email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "invalid email address"
+                  }
+                })}
               ></Form.Control>
+              {errors.email && <Message variant='danger'>{errors.email.message}</Message>}
             </Form.Group>
           </Col>
         </Row>
@@ -75,9 +95,15 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='password'
                 placeholder='Enter password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password is too short"
+                  }
+                })}
               ></Form.Control>
+              {errors.password && <Message variant='danger'>{errors.password.message}</Message>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -86,9 +112,20 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='password'
                 placeholder='Confirm password'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                {...register("confirmPassword", {
+                  required: "Confirm Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password is too short"
+                  },
+                  validate: (value) => {
+                    if (watch('password') !== value) {
+                      return "Your passwords do no match";
+                    }
+                  },
+                })}
               ></Form.Control>
+              {errors.confirmPassword && <Message variant='danger'>{errors.confirmPassword.message}</Message>}
             </Form.Group>
           </Col>
         </Row>
