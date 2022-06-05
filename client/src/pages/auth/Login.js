@@ -12,16 +12,21 @@ import { login } from '../../actions/userActions'
 const LoginScreen = () => {
   const dispatch = useDispatch()
 
-  const userLogin = useSelector((state) => state.userLogin)
-  const { loading, error, success, userInfo } = userLogin
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, error, success, userInfo } = userLogin;
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const responseGoogle = (response) => {
+    console.log('Google response ', response);
+    console.log(response.profileObj);
+  };
 
   useEffect(() => {
     if (success) {
-      navigate('/project')
+      navigate("/project");
     }
-  }, [dispatch, success])
+  }, [dispatch, success]);
 
   const onSubmit = async (values) => {
     dispatch(login(values.email, values.password))
@@ -37,7 +42,7 @@ const LoginScreen = () => {
   return (
     <FormContainer>
       <h2 className="text-center">Sign In</h2>
-      {error && <Message variant='danger'>{error}</Message>}
+      {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group controlId='email'>
@@ -56,7 +61,7 @@ const LoginScreen = () => {
           {errors.email && <Message variant='danger'>{errors.email.message}</Message>}
         </Form.Group>
 
-        <Form.Group controlId='password' className="my-3">
+        <Form.Group controlId="password" className="my-3">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type='password'
@@ -75,18 +80,23 @@ const LoginScreen = () => {
         <Button type='submit' variant='primary' className="mx-auto">
           Login
         </Button>
+
+        <GoogleLogin
+          clientId="your Client ID here"
+          buttonText="Login Using Google"
+          onSuccess={responseGoogle}
+          onFailure={responseGoogle}
+          cookiePolicy={"single_host_origin"}
+        />
       </Form>
 
-      <Row className='py-3'>
+      <Row className="py-3">
         <Col className="justify-content-center d-flex">
-          New User ?
-          <Link to={'/register'}>
-            Register
-          </Link>
+          New User ? <Link to={"/register"}>Register</Link>
         </Col>
       </Row>
     </FormContainer>
-  )
-}
+  );
+};
 
-export default LoginScreen
+export default LoginScreen;

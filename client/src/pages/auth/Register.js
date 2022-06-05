@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useForm } from "react-hook-form";
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../../components/Message'
@@ -9,6 +9,10 @@ import FormContainer from '../../components/FormContainer'
 import { register } from '../../actions/userActions'
 
 const RegisterScreen = ({ location, history }) => {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [message, setMessage] = useState(null)
 
   const dispatch = useDispatch()
@@ -23,17 +27,14 @@ const RegisterScreen = ({ location, history }) => {
     }
   }, [dispatch, success])
 
-  const onSubmit = async (values) => {
-    dispatch(register(values.name, values.email, values.password))
-  };
-
-  const {
-    handleSubmit,
-    register,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const submitHandler = (e) => {
+    e.preventDefault()
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match')
+    } else {
+      dispatch(register(name, email, password))
+    }
+  }
 
   return (
     <FormContainer>
@@ -41,7 +42,7 @@ const RegisterScreen = ({ location, history }) => {
       {message && <Message variant='danger'>{message}</Message>}
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={submitHandler}>
         <Row className="my-3">
           <Col md={6}>
             <Form.Group controlId='name'>
@@ -49,11 +50,9 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='name'
                 placeholder='Enter name'
-                {...register("name", {
-                  required: "Name is required",
-                })}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               ></Form.Control>
-              {errors.name && <Message variant='danger'>{errors.name.message}</Message>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -62,15 +61,9 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='email'
                 placeholder='Enter email'
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "invalid email address"
-                  }
-                })}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               ></Form.Control>
-              {errors.email && <Message variant='danger'>{errors.email.message}</Message>}
             </Form.Group>
           </Col>
         </Row>
@@ -82,15 +75,9 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='password'
                 placeholder='Enter password'
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password is too short"
-                  }
-                })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               ></Form.Control>
-              {errors.password && <Message variant='danger'>{errors.password.message}</Message>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -99,20 +86,9 @@ const RegisterScreen = ({ location, history }) => {
               <Form.Control
                 type='password'
                 placeholder='Confirm password'
-                {...register("confirmPassword", {
-                  required: "Password confirmation is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password is too short"
-                  },
-                  validate: (value) => {
-                    if (watch('password') !== value) {
-                      return "Your passwords do no match";
-                    }
-                  },
-                })}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               ></Form.Control>
-              {errors.confirmPassword && <Message variant='danger'>{errors.confirmPassword.message}</Message>}
             </Form.Group>
           </Col>
         </Row>
